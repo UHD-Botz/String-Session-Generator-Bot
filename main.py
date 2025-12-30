@@ -4,7 +4,7 @@ from config import API_ID, API_HASH, BOT_TOKEN
 class Bot(Client):
     def __init__(self):
         super().__init__(
-            "vj string session bot",
+            "uhd string session bot",
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
@@ -17,7 +17,7 @@ class Bot(Client):
         await super().start()
         me = await self.get_me()
         self.username = '@' + me.username          
-        print('Bot Started Powered By @VJ_Botz')
+        print('Bot Started Powered By @UHDBots')
 
     async def stop(self, *args):
         await super().stop()
