@@ -1,6 +1,0 @@
-dnspython
-motor
-psutil
-pyrofork>=2.3.63
-telethon
-tgcrypto
