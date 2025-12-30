@@ -1,60 +1,90 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
+from pyrogram.errors import UserNotParticipant, ChatAdminRequired
 from config import OWNER_ID, F_SUB
-from TechVJ.db import db
+from UHDBots.db import db
 
-@Client.on_message(filters.private & filters.incoming & filters.command("start"))
+
+def welcome_text(me, user):
+    return (
+        f"<b>𝐇𝐞𝐲 {user.mention}🍷,\n\n"
+        f"ɪ ᴀᴍ {me},\n"
+        f"ᴛʀᴜsᴛᴇᴅ 𝗦𝗧𝗥𝗜𝗡𝗚 𝗚𝗘𝗡𝗘𝗥𝗔𝗧𝗢𝗥 ʙᴏᴛ.\n"
+        f"ғᴜʟʟʏ sᴀғᴇ & sᴇᴄᴜʀᴇ.\n\n"
+        f"Made With ❤️ By : <a href='https://t.me/UHDBots'>UHD Bots</a></b>"
+    )
+
+
+def welcome_buttons():
+    return InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("⚡ Generate String Session ⚡", callback_data="generate")],
+            [
+                InlineKeyboardButton("❣️ Support Group ❣️", url="https://t.me/UHDBots_Support"),
+                InlineKeyboardButton("🥀 Update Channel 🥀", url="https://t.me/UHDBots")
+            ]
+        ]
+    )
+
+
+@Client.on_message(filters.private & filters.command("start"))
 async def start(bot: Client, msg: Message):
-    if not await db.is_user_exist(msg.from_user.id):
-        await db.add_user(msg.from_user.id, msg.from_user.first_name)
+    user_id = msg.from_user.id
+
+    if not await db.is_user_exist(user_id):
+        await db.add_user(user_id, msg.from_user.first_name)
+
+    # Force Subscribe Check
     if F_SUB:
         try:
-            await bot.get_chat_member(int(F_SUB), msg.from_user.id)
-        except:
+            await bot.get_chat_member(int(F_SUB), user_id)
+        except UserNotParticipant:
             try:
-                invite_link = await bot.create_chat_invite_link(int(F_SUB))
-            except:
-                await msg.reply("**Make Sure I Am Admin In Your Channel**")
-                return 
-            key = InlineKeyboardMarkup(
-                [[
-                    InlineKeyboardButton("🍿 Join Update Channel 🍿", url=invite_link.invite_link),
-                    InlineKeyboardButton("🍀 Check Again 🍀", callback_data="chk")
-                ]]
-            ) 
-        await msg.reply_text("**⚠️Access Denied!⚠️\n\nPlease Join My Update Channel To Use Me.If You Joined The Channel Then Click On Check Again Button To Confirm.**", reply_markup=key)
-        return 
+                invite = await bot.create_chat_invite_link(int(F_SUB))
+            except ChatAdminRequired:
+                await msg.reply_text("❌ **Make sure I am admin in the update channel.**")
+                return
+
+            buttons = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("🍿 Join Update Channel 🍿", url=invite.invite_link)],
+                    [InlineKeyboardButton("🍀 Check Again 🍀", callback_data="chk")]
+                ]
+            )
+
+            await msg.reply_text(
+                "**⚠️ Access Denied!\n\n"
+                "Please join my update channel to use me.\n"
+                "After joining, click `Check Again`.**",
+                reply_markup=buttons
+            )
+            return
+
     me = (await bot.get_me()).mention
-    await bot.send_message(
-        chat_id=msg.chat.id,
-        text=f"""<b>𝐇𝐞𝐲 {msg.from_user.mention}🍷,\n\nɪ ᴀᴍ {me},\nᴛʀᴜsᴛᴇᴅ 𝗦𝗧𝗥𝗜𝗡𝗚 𝗚𝗥𝗡𝗘𝗥𝗔𝗧𝗢𝗥 ʙᴏᴛ.ғᴜʟʟʏ sᴀғᴇ & sᴇᴄᴜʀᴇ.\nɴᴏ ᴀɴʏ ᴇʀʀᴏʀ\n\nMade With By : [VJ Botz](https://t.me/VJ_Botz) !</b>""",
-        reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton(text="⚡ Generate String Session ⚡", callback_data="generate")
-            ],[
-                InlineKeyboardButton("❣️ Support Group ❣️", url="https://t.me/VJ_Bot_Disscussion"),
-                InlineKeyboardButton("🥀 Update Channel 🥀", url="https://t.me/VJ_Botz")
-            ]]
-        )
+    await msg.reply_text(
+        welcome_text(me, msg.from_user),
+        reply_markup=welcome_buttons(),
+        disable_web_page_preview=True
     )
 
-@Client.on_callback_query(filters.regex("chk"))
-async def chk(bot : Client, cb : CallbackQuery):
+
+@Client.on_callback_query(filters.regex("^chk$"))
+async def chk(bot: Client, cb: CallbackQuery):
+    user_id = cb.from_user.id
+
     try:
-        await bot.get_chat_member(int(F_SUB), cb.from_user.id)
-    except:
-        await cb.answer("🙅‍♂️ You are not joined my channel first join channel then check again. 🙅‍♂️", show_alert=True)
-        return 
-    me = (await bot.get_me()).mention
-    await bot.send_message(
-        chat_id=cb.from_user.id,
-        text=f"""<b>𝐇𝐞𝐲 {cb.from_user.mention}🍷,\n\nɪ ᴀᴍ {me},\nᴛʀᴜsᴛᴇᴅ 𝗦𝗧𝗥𝗜𝗡𝗚 𝗚𝗥𝗡𝗘𝗥𝗔𝗧𝗢𝗥 ʙᴏᴛ.ғᴜʟʟʏ sᴀғᴇ & sᴇᴄᴜʀᴇ.\nɴᴏ ᴀɴʏ ᴇʀʀᴏʀ\n\nMade With By : [VJ Botz](https://t.me/VJ_Botz) !</b>""",
-        reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton(text="⚡ Generate String Session ⚡", callback_data="generate")
-            ],[
-                InlineKeyboardButton("❣️ Support Group ❣️", url="https://t.me/VJ_Bot_Disscussion"),
-                InlineKeyboardButton("🥀 Update Channel 🥀", url="https://t.me/VJ_Botz")
-            ]]
+        await bot.get_chat_member(int(F_SUB), user_id)
+    except UserNotParticipant:
+        await cb.answer(
+            "🙅‍♂️ You have not joined the channel yet.",
+            show_alert=True
         )
+        return
+
+    me = (await bot.get_me()).mention
+    await cb.message.edit_text(
+        welcome_text(me, cb.from_user),
+        reply_markup=welcome_buttons(),
+        disable_web_page_preview=True
     )
+    await cb.answer()
