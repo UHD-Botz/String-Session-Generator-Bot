@@ -1,7 +1,8 @@
 import traceback
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
-from UHDBots.generate import generate_session, ask_ques, buttons_ques
+from UHDBots.generate import generate_session
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 @Client.on_callback_query(
