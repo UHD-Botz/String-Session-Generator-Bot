@@ -1,5 +1,5 @@
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from TechVJ.db import db
+from UHDBots.db import db
 from pyrogram import Client, filters
 from config import OWNER_ID
 import asyncio
