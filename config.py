@@ -1,20 +1,30 @@
 from os import environ
 
-# Telegram Account Api Id And Api Hash
-API_ID = int(environ.get("API_ID", ""))
-API_HASH = environ.get("API_HASH", "")
+def get_env(name, default=None, cast=str):
+    value = environ.get(name, default)
+    if value is None or value == "":
+        return default
+    try:
+        return cast(value)
+    except Exception:
+        raise ValueError(f"Invalid value for environment variable: {name}")
 
-# Your Main Bot Token 
-BOT_TOKEN = environ.get("BOT_TOKEN", "")
+# Telegram Account API credentials
+API_ID = get_env("API_ID", cast=int)
+API_HASH = get_env("API_HASH")
 
-# Owner ID For Broadcasting 
-OWNER_ID = int(environ.get("OWNER_ID", "")) # Owner Id or Admin Id
+# Bot token
+BOT_TOKEN = get_env("BOT_TOKEN")
 
-# Give Your Force Subscribe Channel Id Below And Make Bot Admin With Full Right.
-F_SUB = environ.get("F_SUB", "")
+# Owner / Admin ID
+OWNER_ID = get_env("OWNER_ID", cast=int)
 
-# Mongodb Database Uri For User Data Store 
-MONGO_DB_URI = environ.get("MONGO_DB_URI", "")
+# Force Subscribe Channel ID (optional)
+# Use -100xxxxxx format
+F_SUB = get_env("F_SUB", default=None, cast=int)
 
-# Port To Run Web Application 
-PORT = int(environ.get('PORT', 8080))
+# MongoDB URI
+MONGO_DB_URI = get_env("MONGO_DB_URI")
+
+# Web server port
+PORT = get_env("PORT", default=8080, cast=int)
