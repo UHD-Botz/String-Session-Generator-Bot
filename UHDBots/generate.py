@@ -25,24 +25,30 @@ from asyncio.exceptions import TimeoutError
 from UHDBots.db import db
 
 
-ASK_TEXT = "**» ▷ Choose the string type you want:**"
+# ===============================
+# REQUIRED FOR callbacks.py
+# ===============================
+ask_ques = "**» ▷ Choose the string type you want:**"
+
+buttons_ques = [
+    [
+        InlineKeyboardButton("𝗧𝗘𝗟𝗘𝗧𝗛𝗢𝗡", callback_data="telethon"),
+        InlineKeyboardButton("𝗣𝗬𝗥𝗢𝗚𝗥𝗔𝗠", callback_data="pyrogram")
+    ],
+    [
+        InlineKeyboardButton("𝗣𝗬𝗥𝗢𝗚𝗥𝗔𝗠 𝗕𝗢𝗧", callback_data="pyrogram_bot"),
+        InlineKeyboardButton("𝗧𝗘𝗟𝗘𝗧𝗛𝗢𝗡 𝗕𝗢𝗧", callback_data="telethon_bot")
+    ]
+]
+
 GEN_BTN = [[InlineKeyboardButton("⚡ Generate String ⚡", callback_data="generate")]]
 
 
 @Client.on_message(filters.private & filters.command(["generate", "gen", "string", "str"]))
 async def generate_cmd(_, msg: Message):
     await msg.reply(
-        ASK_TEXT,
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton("𝗧𝗘𝗟𝗘𝗧𝗛𝗢𝗡", callback_data="telethon"),
-                InlineKeyboardButton("𝗣𝗬𝗥𝗢𝗚𝗥𝗔𝗠", callback_data="pyrogram")
-            ],
-            [
-                InlineKeyboardButton("𝗣𝗬𝗥𝗢𝗚𝗥𝗔𝗠 𝗕𝗢𝗧", callback_data="pyrogram_bot"),
-                InlineKeyboardButton("𝗧𝗘𝗟𝗘𝗧𝗛𝗢𝗡 𝗕𝗢𝗧", callback_data="telethon_bot")
-            ]
-        ])
+        ask_ques,
+        reply_markup=InlineKeyboardMarkup(buttons_ques)
     )
 
 
@@ -87,23 +93,21 @@ async def generate_session(bot: Client, msg: Message, telethon=False, is_bot=Fal
         except ValueError:
             await msg.reply("❌ API_ID must be integer", reply_markup=InlineKeyboardMarkup(GEN_BTN))
             return
+
         api_hash_msg = await bot.ask(user_id, "Send **API_HASH**", filters=filters.text)
         if await cancelled(api_hash_msg):
             return
+
         api_hash = api_hash_msg.text.strip()
 
     # PHONE / BOT TOKEN
-    prompt = (
-        "Send **Phone Number** with country code"
-        if not is_bot else
-        "Send **Bot Token**"
-    )
+    prompt = "Send **Phone Number** with country code" if not is_bot else "Send **Bot Token**"
     phone_msg = await bot.ask(user_id, prompt, filters=filters.text)
     if await cancelled(phone_msg):
         return
+
     phone = phone_msg.text.strip()
 
-    # CLIENT INIT
     client = None
     try:
         if telethon:
@@ -133,6 +137,7 @@ async def generate_session(bot: Client, msg: Message, telethon=False, is_bot=Fal
             )
             if await cancelled(code_msg):
                 return
+
             code = code_msg.text.replace(" ", "")
 
             try:
