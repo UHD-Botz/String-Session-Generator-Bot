@@ -1,7 +1,0 @@
-dnspython
-motor
-psutil
-kurigram
-python-dotenv
-telethon
-TgCrypto
