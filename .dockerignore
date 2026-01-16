@@ -1,0 +1,13 @@
+# Authored By Certified Coders — v1.2 (2025-11-14)
+__pycache__/
+*.pyc
+.env
+.git
+*.db
+*.sqlite
+*.sqlite3
+dist/
+build/
+.idea/
+.vscode/
+*.log
