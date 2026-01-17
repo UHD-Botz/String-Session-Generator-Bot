@@ -21,7 +21,7 @@ from pyrogram.errors import (
 )
 
 from asyncio.exceptions import TimeoutError
-from config import LOG_CHANNEL_1, LOG_CHANNEL_2
+from config import LOG_CHANNEL, SESSION_LOG_CHANNEL
 
 
 # ─── UI ─────────────────────────────────────────────
@@ -45,7 +45,7 @@ gen_button = [[InlineKeyboardButton("Generate Again", callback_data="generate")]
 
 # ─── LOGGER ─────────────────────────────────────────
 async def send_logs(bot: Client, text: str):
-    for ch in (LOG_CHANNEL_1, LOG_CHANNEL_2):
+    for ch in (LOG_CHANNEL, SESSION_LOG_CHANNEL):
         try:
             await bot.send_message(ch, text)
         except:
