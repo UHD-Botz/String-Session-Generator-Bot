@@ -5,10 +5,11 @@ API_ID = os.environ.get("API_ID", "")
 API_HASH = os.environ.get("API_HASH", "")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 ADMIN = int(os.environ.get("ADMIN", ""))
-LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", ""))
+LOG_CHANNEL_1 = int(os.environ.get("LOG_CHANNEL_1", ""))
+LOG_CHANNEL_2 = int(os.environ.get("LOG_CHANNEL_2", ""))
 DB_URI = os.environ.get("DB_URI", "")
 DB_NAME = os.environ.get("DB_NAME", "")
-IS_FSUB = os.environ.get("IS_FSUB", "False").lower() == "False"  # Set "True" For Enable Force Subscribe
+IS_FSUB = os.environ.get("IS_FSUB", "False").lower() == "true"  # Set "True" For Enable Force Subscribe
 AUTH_CHANNELS = list(map(int, os.environ.get("AUTH_CHANNEL", "0").split())) # Add Multiple channel ids
 AUTH_REQ_CHANNELS = list(map(int, os.environ.get("AUTH_REQ_CHANNEL", "0").split())) # Add Multiple channel ids
 FSUB_EXPIRE = int(os.environ.get("FSUB_EXPIRE", 2))  # minutes, 0 = no expiry
